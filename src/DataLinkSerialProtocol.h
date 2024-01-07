@@ -1,6 +1,11 @@
 #pragma once
 
-#include <cinttypes>
+#ifndef ARDUINO
+#include <cstdint>
+#else
+#include <Arduino.h>
+#endif
+
 
 namespace proto
 {

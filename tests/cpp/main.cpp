@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cassert>
 
-#include "protocol.h"
+#include "DataLinkSerialProtocol.h"
 
 bool compareBuffers( const uint8_t* buff1, uint8_t size1,
                      const uint8_t* buff2, uint8_t size2 )

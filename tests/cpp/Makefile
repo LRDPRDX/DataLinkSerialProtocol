@@ -1,5 +1,5 @@
-INC_DIR = ../../protocol
-CXX_FLAGS = -std=c++11
+INC_DIR = ../../src
+CXX_FLAGS = -std=c++17
 CXX = g++
 SRC = $(wildcard *.cpp)
 BIN = $(SRC:.cpp=)
