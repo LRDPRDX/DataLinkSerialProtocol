@@ -16,6 +16,6 @@ _To be continued..._
 
 ## TODO
 
-[ ] Add examples
-[ ] Add `keywords.txt`
-[ ] Finish the docs :)
+- [ ] Add examples
+- [ ] Add `keywords.txt`
+- [ ] Finish the docs :)
