@@ -17,19 +17,19 @@ namespace proto
         eFTR    = 0x7D,
     };
 
-    template<uint8_t TMaxData = 10>
+    template<uint8_t NMaxMessage = 10>
     struct Bicoder
     {
-        static_assert( (0U < TMaxData) and (TMaxData < 127U),
+        static_assert( (0U < NMaxMessage) and (NMaxMessage < 127U),
                        "The max length of the message is out of range" );
 
-        static constexpr uint8_t maxEncodedSize = 2U * TMaxData + 2U;
+        static constexpr uint8_t maxEncodedSize = 2U * NMaxMessage + 2U;
 
-        using State_t = bool (Bicoder::*)(uint8_t data);
+        using State_t = bool (Bicoder::*)(const uint8_t data);
 
         Bicoder() = default;
 
-        bool            decodeByte( uint8_t data );
+        bool            decodeByte( const uint8_t data );
         bool            decodeMessage( const uint8_t* data, uint8_t size );
         bool            encodeMessage( const uint8_t* data, uint8_t size );
         void            reset();
@@ -38,20 +38,29 @@ namespace proto
         const uint8_t*  buff() const { return m_message; }
 
         private :
-            bool waitHeader(uint8_t data);
-            bool inMessage(uint8_t data);
-            bool afterEscape(uint8_t data);
+            bool        waitHeader(const uint8_t data);
+            bool        inMessage(const uint8_t data);
+            bool        afterEscape(const uint8_t data);
 
-            bool        pushByte( uint8_t data );
+            void        appendMessage( const uint8_t data );
+            bool        pushByte( const uint8_t data );
+            bool        encodeByte( const uint8_t data );
 
-            uint8_t     m_message[maxEncodedSize] = { 0 };
-            uint32_t    m_index { 0 };
             State_t     m_state { &Bicoder::waitHeader };
+            uint8_t     m_message[maxEncodedSize] = { 0 };
+            uint8_t     m_index { 0 };
             bool        m_isCompleted { false };
     };
 
     template<uint8_t N>
-    bool Bicoder<N>::pushByte( uint8_t data )
+    void Bicoder<N>::appendMessage( const uint8_t data )
+    {
+        m_message[m_index] = data;
+        m_index++;
+    }
+
+    template<uint8_t N>
+    bool Bicoder<N>::pushByte( const uint8_t data )
     {
         if( m_index >= N )
         {
@@ -59,7 +68,8 @@ namespace proto
             return false;
         }
 
-        m_message[m_index++] = data;
+        appendMessage( data );
+
         return true;
     }
 
@@ -72,7 +82,7 @@ namespace proto
     }
 
     template<uint8_t N>
-    bool Bicoder<N>::decodeByte( uint8_t data )
+    bool Bicoder<N>::decodeByte( const uint8_t data )
     {
         return (this->*m_state)( data );
     }
@@ -92,6 +102,24 @@ namespace proto
     }
 
     template<uint8_t N>
+    bool Bicoder<N>::encodeByte( const uint8_t data )
+    {
+        switch( data )
+        {
+            case( ESpecial::eHDR ) :
+            case( ESpecial::eESC ) :
+            case( ESpecial::eFTR ) :
+                appendMessage( ESpecial::eESC );
+                appendMessage( data ^ ESpecial::eXOR );
+                break;
+            default :
+                appendMessage( data );
+        }
+
+        return true;
+    }
+
+    template<uint8_t N>
     bool Bicoder<N>::encodeMessage( const uint8_t* data, uint8_t size )
     {
         reset();
@@ -102,19 +130,7 @@ namespace proto
         m_message[m_index++] = ESpecial::eHDR;
 
         for( uint8_t i = 0; i < size; ++i )
-        {
-            switch( data[i] )
-            {
-                case( ESpecial::eHDR ) :
-                case( ESpecial::eESC ) :
-                case( ESpecial::eFTR ) :
-                    m_message[m_index++] = ESpecial::eESC;
-                    m_message[m_index++] = (data[i] ^ ESpecial::eXOR);
-                    break;
-                default :
-                    m_message[m_index++] = data[i];
-            }
-        }
+            encodeByte( data[i] );
 
         m_message[m_index++] = ESpecial::eFTR;
 
@@ -122,7 +138,7 @@ namespace proto
     }
 
     template<uint8_t N>
-    bool Bicoder<N>::waitHeader( uint8_t data )
+    bool Bicoder<N>::waitHeader( const uint8_t data )
     {
         reset();
 
@@ -133,7 +149,7 @@ namespace proto
     }
 
     template<uint8_t N>
-    bool Bicoder<N>::inMessage( uint8_t data )
+    bool Bicoder<N>::inMessage( const uint8_t data )
     {
         switch( data )
         {
@@ -153,7 +169,7 @@ namespace proto
     }
 
     template<uint8_t N>
-    bool Bicoder<N>::afterEscape( uint8_t data )
+    bool Bicoder<N>::afterEscape( const uint8_t data )
     {
         m_state = &Bicoder::inMessage;
         pushByte( data ^ ESpecial::eXOR );
