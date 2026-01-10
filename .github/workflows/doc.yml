@@ -1,0 +1,24 @@
+name: Docs
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-documentation:
+    permissions:
+      deployments: write
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+    - name: Docs
+      uses: mattnotmitt/doxygen-action@v1.9.5
+
+    - name: Deploy
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        force_orphan: true
+        enable_jekyll: false
+        publish_dir: docs/html
+        publish_branch: github-pages
