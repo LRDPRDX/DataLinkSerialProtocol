@@ -3,7 +3,7 @@
 Written primarly for communication between Arduino and PC but,
 I believe, can be used in any applications (if suitable, see *Key feautures* below)
 
-## Key features :
+## Key features
 
 - Byte stuffing
 - Header only
