@@ -8,6 +8,7 @@ I believe, can be used in any applications (if suitable, see *Key feautures* bel
 - Byte stuffing
 - Header only
 - Max length of a (raw) message = 126 bytes
+- Stream message decoding (byte by byte) possible
 
 ## Description & terminology
 
@@ -58,6 +59,16 @@ i.e. a special byte `aₛ` is encoded with two bytes:
 
 - `ESC`
 - `aₛ xor XOR`
+
+> [!NOTE]
+> The **HDR** and **FTR** characters are actually printable ASCII '{' and '}' respectively.
+> So if
+> your data has no special bytes you can debug your channel without any additional software:
+> just put the frames by hand. I do this for my project: I send this to my Arduino board right
+> from the serial monitor:
+> ```
+> {mz>1000}
+> ```
 
 #### Decoding
 
@@ -140,6 +151,10 @@ int main ()
     }
 }
 ```
+
+## Documentation
+
+Available here: https://lrdprdx.github.io/DataLinkSerialProtocol/index.html
 
 ## Acknowledgements
 
