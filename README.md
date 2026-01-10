@@ -87,7 +87,7 @@ diagram:
 
 ## Example
 
-```c++
+```cpp
 #include <cassert>
 
 #include "DataLinkSerialProtocol.h"
