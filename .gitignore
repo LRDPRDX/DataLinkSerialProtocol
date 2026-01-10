@@ -31,3 +31,6 @@ main
 
 # vim recovery files
 *.sw[o-z]
+
+# doc
+docs
