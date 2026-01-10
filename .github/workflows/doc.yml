@@ -13,7 +13,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Docs
-      uses: mattnotmitt/doxygen-action@v1.9.5
+      uses: mattnotmitt/doxygen-action@v1.11.0
 
     - name: Deploy
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
