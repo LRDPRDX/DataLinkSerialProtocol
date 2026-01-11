@@ -1,5 +1,8 @@
 # A Data Link layer serial protocol
 
+[![Docs](https://github.com/LRDPRDX/DataLinkSerialProtocol/actions/workflows/doc.yml/badge.svg)](https://github.com/LRDPRDX/DataLinkSerialProtocol/actions/workflows/doc.yml)
+[![pages-build-deployment](https://github.com/LRDPRDX/DataLinkSerialProtocol/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/LRDPRDX/DataLinkSerialProtocol/actions/workflows/pages/pages-build-deployment)
+
 Written primarly for communication between Arduino and PC but,
 I believe, can be used in any applications (if suitable, see *Key feautures* below)
 
